@@ -1,0 +1,14 @@
+.table_header{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    font-weight: bold;
+    
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.table_container{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}

@@ -1,0 +1,17 @@
+.tablerow_container{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+
+    border: 1px solid black;
+    padding: 1rem;
+}
+
+.tablerow_container:hover{
+    scale: 1.05;
+    cursor: pointer;
+}
+
+.tablerow_container *{
+    align-self: center;
+}

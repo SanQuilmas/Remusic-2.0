@@ -1,0 +1,16 @@
+.navbar_container{
+    padding: 1rem;
+
+    display: flex;
+    flex-direction: row;
+    gap: 3rem;
+}
+
+.navbar_container a:hover{
+    scale: 1.25;
+}
+
+#navbar_container_title{
+    text-decoration: none;
+    color: inherit;
+}
