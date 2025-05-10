@@ -1,0 +1,10 @@
+.music_container {
+  width: 90vw;
+  height: 100%;
+}
+
+.music_container svg {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+}

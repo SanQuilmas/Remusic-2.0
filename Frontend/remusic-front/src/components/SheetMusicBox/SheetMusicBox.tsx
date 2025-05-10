@@ -1,7 +1,14 @@
+import { useContext } from "react";
+import OpenSheetMusicDisplayComponent from "../OpenSheetMusicDisplayComponent/OpenSheetMusicDisplayComponent";
+import "./SheetMusicBox.css";
+import { instanceContext } from "../MainMusicContainer/MainMusicContainer";
+
 export const SheetMusicBox = () => {
-    return (
-        <div>
-            
-        </div>
-    )
-}
+  const { music_xml } = useContext(instanceContext);
+
+  return (
+    <div className="music_container">
+      <OpenSheetMusicDisplayComponent fileUrl={music_xml} />
+    </div>
+  );
+};
