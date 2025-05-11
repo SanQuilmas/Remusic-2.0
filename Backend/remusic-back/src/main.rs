@@ -25,9 +25,11 @@ mod services;
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            .service(controllers::sheet_instance_controller::get_all)
-            .service(controllers::sheet_instance_controller::get_by_id)
-            .service(controllers::sheet_instance_controller::create)
+            .service(controllers::sheet_instance_controller::get_sheets)
+            .service(controllers::sheet_instance_controller::get_sheet)
+            .service(controllers::sheet_instance_controller::post_sheet)
+            .service(controllers::sheet_instance_controller::put_sheet)
+            .service(controllers::sheet_instance_controller::delete_sheet)
             .route(
                 "/hey",
                 web::get().to(controllers::sheet_instance_controller::manual_hello),
