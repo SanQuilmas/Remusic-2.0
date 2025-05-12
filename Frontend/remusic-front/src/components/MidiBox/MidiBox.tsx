@@ -3,10 +3,14 @@ import { MidiPlayerVisualizer } from "../MidiPlayerVisualizer/MidiPlayerVisualiz
 import { instanceContext } from "../MainMusicContainer/MainMusicContainer";
 
 export const MidiBox = () => {
-  const { music_midi } = useContext(instanceContext);
+  const { instance } = useContext(instanceContext);
   return (
     <div>
-      <MidiPlayerVisualizer music_midi={music_midi} />
+      {instance && instance.midi_path ? (
+        <MidiPlayerVisualizer music_midi={instance.midi_path} />
+      ) : (
+        ""
+      )}
     </div>
   );
 };

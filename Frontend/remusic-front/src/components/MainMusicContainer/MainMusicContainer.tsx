@@ -1,28 +1,37 @@
-import { createContext } from "react";
+import { createContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { MainAPI } from "../../data/api_endpoints/enpoints";
+import type { instanciaPartitura } from "../../data/entities_types/types";
 import { MidiBox } from "../MidiBox/MidiBox";
 import { SheetMusicBox } from "../SheetMusicBox/SheetMusicBox";
 import "./MainMusicContainer.css";
 
 interface instanceContextType {
-  music_midi: string;
-  music_xml: string;
+  instance: instanciaPartitura | null;
 }
 
 const instanceContext = createContext<instanceContextType>({
-  music_xml: "",
-  music_midi: "",
+  instance: null,
 });
 
 export const MainMusicContainer = () => {
+  const [instance, setInstance] = useState<instanciaPartitura | null>(null);
+  const instanceID = useParams();
+
+  const fetchData = async () => {
+    console.log("InstanceID: " + instanceID.id);
+    const response = await fetch(MainAPI + `/${instanceID.id}`);
+    const data: instanciaPartitura = await response.json();
+    setInstance(data);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
-    <instanceContext.Provider
-      value={{
-        music_xml: "/MozaVeilSample.xml",
-        music_midi:
-          "https://magenta.github.io/magenta-js/music/demos/melody.mid",
-      }}
-    >
-      <h1> Title </h1>
+    <instanceContext.Provider value={{ instance }}>
+      <h1> {instance ? instance.name : ""} </h1>
       <div className="music_details">
         <div className="musicxml_column music_details_column">
           <div>

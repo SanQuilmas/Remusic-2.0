@@ -23,9 +23,9 @@ pub async fn delete_sheet(path: web::Path<i32>) -> impl Responder {
 }
 
 #[put("/sheet/{id}")]
-pub async fn put_sheet(path: web::Path<i32>) -> impl Responder {
+pub async fn put_sheet(path: web::Path<i32>, req_body: String) -> impl Responder {
     let id = path.into_inner();
-    crate::services::sheet_instance_service::put_sheet_instance(id).await
+    crate::services::sheet_instance_service::put_sheet_instance(id, req_body).await
 }
 
 pub async fn manual_hello() -> impl Responder {

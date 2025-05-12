@@ -4,11 +4,15 @@ import "./SheetMusicBox.css";
 import { instanceContext } from "../MainMusicContainer/MainMusicContainer";
 
 export const SheetMusicBox = () => {
-  const { music_xml } = useContext(instanceContext);
+  const { instance } = useContext(instanceContext);
 
   return (
     <div className="music_container">
-      <OpenSheetMusicDisplayComponent fileUrl={music_xml} />
+      {instance && instance.musicxml_path ? (
+        <OpenSheetMusicDisplayComponent fileUrl={instance?.musicxml_path} />
+      ) : (
+        ""
+      )}
     </div>
   );
 };

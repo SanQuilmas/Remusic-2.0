@@ -5,4 +5,8 @@ edition = "2024"
 
 [dependencies]
 actix-web = "4"
+futures = "0.3.31"
+sea-orm = { version = "1.1.11", features = ["macros", "runtime-async-std-native-tls", "sqlx-postgres"] }
+sea-orm-migration = { version = "1.1.11", features = ["runtime-async-std-native-tls", "sqlx-postgres"] }
 serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"

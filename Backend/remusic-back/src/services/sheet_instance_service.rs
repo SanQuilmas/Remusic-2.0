@@ -13,13 +13,17 @@ pub async fn get_sheet_instance(id: i32) -> impl Responder {
 }
 
 pub async fn create_sheet_instance(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
+    let sheet_instance: SheetInstance =
+        repositories::sheet_instance_repository::create_instance(req_body);
+    HttpResponse::Ok().json(sheet_instance)
 }
 
 pub async fn delete_sheet_instance(id: i32) -> impl Responder {
     HttpResponse::Ok().body(format!("ID: {}", id))
 }
 
-pub async fn put_sheet_instance(id: i32) -> impl Responder {
-    HttpResponse::Ok().body(format!("ID: {}", id))
+pub async fn put_sheet_instance(id: i32, req_body: String) -> impl Responder {
+    let sheet_instance: SheetInstance =
+        repositories::sheet_instance_repository::put_instance(id, req_body);
+    HttpResponse::Ok().json(sheet_instance)
 }

@@ -1,6 +1,6 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct SheetInstance {
     id: i32,
     name: String,
@@ -20,35 +20,35 @@ impl SheetInstance {
         }
     }
 
-    pub fn get_id(&self) -> i32 {
+    pub fn _get_id(&self) -> i32 {
         self.id
     }
-    pub fn get_name(&self) -> String {
+    pub fn _get_name(&self) -> String {
         self.name.clone()
     }
-    pub fn get_image_path(&self) -> String {
+    pub fn _get_image_path(&self) -> String {
         self.image_path.clone()
     }
-    pub fn get_musicxml_path(&self) -> String {
+    pub fn _get_musicxml_path(&self) -> String {
         self.musicxml_path.clone().unwrap_or(String::from(""))
     }
-    pub fn get_midi_path(&self) -> String {
+    pub fn _get_midi_path(&self) -> String {
         self.midi_path.clone().unwrap_or(String::from(""))
     }
 
-    pub fn set_id(&mut self, new_id: i32) {
+    pub fn _set_id(&mut self, new_id: i32) {
         self.id = new_id;
     }
-    pub fn set_name(&mut self, new_name: String) {
+    pub fn _set_name(&mut self, new_name: String) {
         self.name = new_name;
     }
-    pub fn set_image_path(&mut self, new_image_path: String) {
+    pub fn _set_image_path(&mut self, new_image_path: String) {
         self.image_path = new_image_path;
     }
-    pub fn set_musicxml_path(&mut self, new_musicxml_path: String) {
+    pub fn _set_musicxml_path(&mut self, new_musicxml_path: String) {
         self.musicxml_path = Some(new_musicxml_path);
     }
-    pub fn set_midi_path(&mut self, new_midi_path: String) {
+    pub fn _set_midi_path(&mut self, new_midi_path: String) {
         self.midi_path = Some(new_midi_path);
     }
 }

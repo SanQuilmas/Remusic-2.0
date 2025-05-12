@@ -1,10 +1,9 @@
 interface instanciaPartitura {
-  id: Number;
-  created_at: Date;
+  id: number;
   name: string;
-  music_img: string;
-  music_xml: string;
-  music_midi: string;
+  image_path: string;
+  musicxml_path: string | null;
+  midi_path: string | null;
 }
 
 export type { instanciaPartitura };
