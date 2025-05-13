@@ -1,7 +1,5 @@
-pub use sea_orm_migration::prelude::*;
-
+use sea_orm_migration::prelude::*;
 mod m20250511_000001_create_sheet_instance_table;
-
 pub struct Migrator;
 
 #[async_trait::async_trait]
