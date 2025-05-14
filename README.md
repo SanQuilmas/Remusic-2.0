@@ -2,9 +2,9 @@
 
 ReMusic 2.0 is the next evolution of the ReMusic project, designed to scan physical sheet music and convert it into an editable digital format. This version introduces significant improvements in both performance and user experience:
 
-* **Rust Backend:** Harnessing the power of Rust for blazing-fast processing and enhanced scalability.
-* **React Frontend:** A modern, interactive, and maintainable user interface for seamless navigation and real-time interaction.
-* **Containerized Deployment:** Built to run in Docker containers, making deployment straightforward and environment-agnostic.
+- **Rust Backend:** Harnessing the power of Rust for blazing-fast processing and enhanced scalability.
+- **React Frontend:** A modern, interactive, and maintainable user interface for seamless navigation and real-time interaction.
+- **Containerized Deployment:** Built to run in Docker containers, making deployment straightforward and environment-agnostic.
 
 ### Why ReMusic 2.0?
 
@@ -22,18 +22,52 @@ ReMusic 2.0 is the next evolution of the ReMusic project, designed to scan physi
 
 ### Installation Instructions
 
-After cloning the repository, follow these steps to set up ReMusic 2.0:
+After cloning the repository, follow these steps to set up ReMusic 2.0. The order of operations is important.
+
+#### Podman Virtual Network
 
 ```bash
-# Navigate to the project directory
-cd remusic2.0
+# Use this command to use the preconfigured ENV
+podman network create mynetwork
+```
+
+#### Database
+
+```bash
+# Use this command to use the preconfigured ENV
+podman run -d --name postgresdb --network mynetwork -e POSTGRES_DB=postgres -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -p 6432:5432 postgres:17.4-alpine
+```
+
+#### Backend
+
+```bash
+# To install, build and run the Rust API
+cd ReMusic 2.0/Backend/remusic-back/
+cargo build
+cargo run
+```
+
+#### Frontend
+
+```bash
+# To install and run the React frontend
+cd ReMusic 2.0/Frontend/remusic-front/
+npm install
+npm run dev
 ```
 
 ### Technologies Used
 
-* **Rust** — For backend processing and API management.
-* **React** — For an interactive and modern frontend.
-* **Docker** — For isolated and consistent deployments.
+- **Rust** — For backend processing and API management.
+- **React** — For an interactive and modern frontend.
+- **Podman** — For isolated and consistent deployments.
+- **Postgres** - For database management and data storage.
+
+#### Needed Software
+
+- **Rustup and Cargo** - For building and running the Rust API.
+- **Podman** — For isolated and consistent deployments.
+- **Npm and Node** - For building and running the React frontend.
 
 ### Contributing
 
