@@ -8,8 +8,8 @@ export const SheetMusicBox = () => {
 
   return (
     <div className="music_container">
-      {instance && instance.musicxml_path ? (
-        <OpenSheetMusicDisplayComponent fileUrl={instance?.musicxml_path} />
+      {instance && instance.music_xml_path ? (
+        <OpenSheetMusicDisplayComponent fileUrl={instance.music_xml_path} />
       ) : (
         ""
       )}

@@ -19,7 +19,6 @@ export const MainMusicContainer = () => {
   const instanceID = useParams();
 
   const fetchData = async () => {
-    console.log("InstanceID: " + instanceID.id);
     const response = await fetch(MainAPI + `/${instanceID.id}`);
     const data: instanciaPartitura = await response.json();
     setInstance(data);

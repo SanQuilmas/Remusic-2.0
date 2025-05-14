@@ -1,22 +1,31 @@
-// use actix_web::{HttpResponse, Responder};
+use actix_web::{HttpResponse, Responder};
+use sea_orm::*;
 
-// use crate::{entities::sheet_instance::Model as SheetInstance, repositories};
+use crate::{
+    entities::sheet_instance::{self},
+    repositories::{
+        self,
+        sheet_instance_repository::{find_all, find_by_id},
+    },
+};
 
-// pub async fn get_all_sheets() -> impl Responder {
-//     let sheet_list: Vec<SheetInstance> = repositories::sheet_instance_repository::find_all();
-//     HttpResponse::Ok().json(sheet_list)
-// }
+pub async fn get_all_sheets(conn: DatabaseConnection) -> impl Responder {
+    let sheet_list: Vec<sheet_instance::Model> = find_all(conn.clone()).await;
+    HttpResponse::Ok().json(sheet_list)
+}
 
-// pub async fn get_sheet_instance(id: i32) -> impl Responder {
-//     let sheet_instance: SheetInstance = repositories::sheet_instance_repository::find_by_id(id);
-//     HttpResponse::Ok().json(sheet_instance)
-// }
+pub async fn get_sheet_instance(id: i32, conn: DatabaseConnection) -> impl Responder {
+    match find_by_id(id, conn.clone()).await {
+        Some(sheet_instance) => HttpResponse::Ok().json(sheet_instance),
+        None => HttpResponse::NotFound().body("Sheet instance not found"),
+    }
+}
 
-// // pub async fn create_sheet_instance(req_body: String) -> impl Responder {
-// //     let sheet_instance: SheetInstance =
-// //         repositories::sheet_instance_repository::create_instance(req_body);
-// //     HttpResponse::Ok().json(sheet_instance)
-// // }
+pub async fn create_sheet_instance(req_body: String, conn: DatabaseConnection) -> impl Responder {
+    let sheet_instance: sheet_instance::Model =
+        repositories::sheet_instance_repository::create_instance(req_body, conn.clone()).await;
+    HttpResponse::Ok().json(sheet_instance)
+}
 
 // pub async fn delete_sheet_instance(id: i32) -> impl Responder {
 //     HttpResponse::Ok().body(format!("ID: {}", id))

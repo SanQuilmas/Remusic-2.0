@@ -1,5 +1,3 @@
-use crate::entities;
-use crate::entities::sheet_instance::Model;
 use crate::entities::{prelude::*, *};
 use sea_orm::*;
 
@@ -8,29 +6,41 @@ use sea_orm::*;
 //     temp._set_midi_path(String::from(
 //         "https://magenta.github.io/magenta-js/music/demos/melody.mid",
 //     ));
+// /logo.webp
 //     temp._set_musicxml_path(String::from("/MozaVeilSample.xml"));
 
-pub fn find_all() -> Vec<Model> {
-    let sheet_list: Vec<Model> = Vec::new();
+pub async fn find_all(conn: DatabaseConnection) -> Vec<sheet_instance::Model> {
+    let sheet_list: Vec<sheet_instance::Model> = SheetInstance::find()
+        .all(&conn)
+        .await
+        .expect("Error Getting All Sheets");
 
     sheet_list
 }
 
-pub fn find_by_id(id: i32) -> Model {
-    let temp: Model = null;
-    temp
+pub async fn find_by_id(id: i32, conn: DatabaseConnection) -> Option<sheet_instance::Model> {
+    let found_sheet: Option<sheet_instance::Model> = SheetInstance::find_by_id(id)
+        .one(&conn)
+        .await
+        .expect("Error getting sheet by id");
+    found_sheet
 }
 
-pub fn create_instance(req_body: String) -> () {
-    let info: Model = serde_json::from_str(&req_body).expect("Failed to deserialize JSON");
+pub async fn create_instance(req_body: String, conn: DatabaseConnection) -> sheet_instance::Model {
+    let info: sheet_instance::Model =
+        serde_json::from_str(&req_body).expect("Failed to deserialize JSON");
+
     let new_instance = sheet_instance::ActiveModel {
-        id: ActiveValue::Set(info.id),
+        id: ActiveValue::not_set(),
         name: ActiveValue::Set(info.name),
         image_path: ActiveValue::Set(info.image_path),
         music_xml_path: ActiveValue::Set(info.music_xml_path),
-        midi_path: ActiveValue::Set(info.music_xml_path),
+        midi_path: ActiveValue::Set(info.midi_path),
     };
-    let res = sheet_instance::insert(new_instance).exec(db).await?;
+    new_instance
+        .insert(&conn)
+        .await
+        .expect("Failed to insert into Database")
 }
 
 // pub fn put_instance(_id: i32, req_body: String) -> SheetInstance {

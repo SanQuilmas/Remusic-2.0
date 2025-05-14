@@ -1,29 +1,40 @@
-// use actix_web::{HttpResponse, Responder, delete, get, /*post, put,*/ web};
+use actix_web::{Responder, get, post, /*put, delete,*/ web};
+use log::info;
+use sea_orm::*;
 
-// #[get("/sheet")]
-// pub async fn get_sheets() -> impl Responder {
-//     crate::services::sheet_instance_service::get_all_sheets().await
-// }
+use crate::services::sheet_instance_service::{create_sheet_instance, get_all_sheets};
 
-// // #[post("/sheet")]
-// // pub async fn post_sheet(req_body: String) -> impl Responder {
-// //     crate::services::sheet_instance_service::create_sheet_instance(req_body).await
-// // }
+#[get("/sheet")]
+pub async fn get_sheets(conn: web::Data<DatabaseConnection>) -> impl Responder {
+    info!("Get Sheets Service Called");
+    get_all_sheets(conn.get_ref().clone()).await
+}
 
-// #[get("/sheet/{id}")]
-// pub async fn get_sheet(path: web::Path<i32>) -> impl Responder {
-//     let id = path.into_inner();
-//     crate::services::sheet_instance_service::get_sheet_instance(id).await
-// }
+#[post("/sheet")]
+pub async fn post_sheet(req_body: String, conn: web::Data<DatabaseConnection>) -> impl Responder {
+    create_sheet_instance(req_body, conn.get_ref().clone()).await
+}
+
+#[get("/sheet/{id}")]
+pub async fn get_sheet(
+    path: web::Path<i32>,
+    conn: web::Data<DatabaseConnection>,
+) -> impl Responder {
+    let id = path.into_inner();
+    crate::services::sheet_instance_service::get_sheet_instance(id, conn.get_ref().clone()).await
+}
 
 // #[delete("/sheet/{id}")]
-// pub async fn delete_sheet(path: web::Path<i32>) -> impl Responder {
+// pub async fn delete_sheet(
+//     path: web::Path<i32>,
+//     conn: web::Data<DatabaseConnection>,
+// ) -> impl Responder {
 //     let id = path.into_inner();
 //     crate::services::sheet_instance_service::delete_sheet_instance(id).await
 // }
 
-// // #[put("/sheet/{id}")]
-// // pub async fn put_sheet(path: web::Path<i32>, req_body: String) -> impl Responder {
-// //     let id = path.into_inner();
-// //     crate::services::sheet_instance_service::put_sheet_instance(id, req_body).await
-// // }
+// #[put("/sheet/{id}")]
+// pub async fn put_sheet(path: web::Path<i32>, req_body: String, conn: web::Data<DatabaseConnection>) -> impl Responder {
+//     let id = path.into_inner();
+//     crate::services::sheet_instance_service::put_sheet_instance(id, req_body).await
+// }

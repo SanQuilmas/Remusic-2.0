@@ -17,7 +17,9 @@ export const TableRow = ({ instanceInfo }: RowProps) => {
   return (
     <div className="tablerow_container">
       <div> {instanceInfo.name} </div>
-      <div> {instanceInfo.image_path} </div>
+      <div>
+        <img src={instanceInfo.image_path} width={100} height={100} />
+      </div>
       <div>
         {" "}
         <Link to={`${instanceInfo.id}`}> View and Download Output </Link>{" "}

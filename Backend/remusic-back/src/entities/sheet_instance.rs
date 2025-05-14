@@ -14,7 +14,7 @@ pub struct Model {
     pub midi_path: Option<String>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation, Serialize, Deserialize)]
 pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
