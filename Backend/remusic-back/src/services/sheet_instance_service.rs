@@ -2,15 +2,18 @@ use actix_web::{HttpResponse, Responder};
 use sea_orm::*;
 
 use crate::{
-    entities::sheet_instance::{self},
+    entities::{
+        dto_sheet_instance::DtoCreateSheetInstance,
+        sheet_instance::{self},
+    },
     repositories::{
         self,
-        sheet_instance_repository::{find_all, find_by_id},
+        sheet_instance_repository::{delete_by_id, find_all, find_by_id},
     },
 };
 
 pub async fn get_all_sheets(conn: DatabaseConnection) -> impl Responder {
-    let sheet_list: Vec<sheet_instance::Model> = find_all(conn.clone()).await;
+    let sheet_list: Vec<DtoCreateSheetInstance> = find_all(conn.clone()).await;
     HttpResponse::Ok().json(sheet_list)
 }
 
@@ -27,9 +30,9 @@ pub async fn create_sheet_instance(req_body: String, conn: DatabaseConnection) -
     HttpResponse::Ok().json(sheet_instance)
 }
 
-// pub async fn delete_sheet_instance(id: i32) -> impl Responder {
-//     HttpResponse::Ok().body(format!("ID: {}", id))
-// }
+pub async fn delete_sheet_instance(id: i32, conn: DatabaseConnection) -> impl Responder {
+    delete_by_id(id, conn.clone()).await
+}
 
 // pub async fn put_sheet_instance(id: i32, req_body: String) -> impl Responder {
 //     let sheet_instance: SheetInstance =

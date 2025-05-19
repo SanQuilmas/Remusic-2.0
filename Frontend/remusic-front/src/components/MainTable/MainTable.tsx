@@ -11,12 +11,20 @@ export const MainTable = () => {
   const fetchData = async () => {
     const response = await fetch(MainAPI);
     const data: instanciaPartitura[] = await response.json();
-    setSheetList(data);
+    const dataWithImagePath = data.map((instance) => ({
+      ...instance,
+      image_path: `data:image/png;base64,${instance.image_blob}`,
+    }));
+    setSheetList(dataWithImagePath);
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleDeleteRow = (id: number) => {
+    setSheetList((prevList) => prevList.filter((item) => item.id !== id));
+  };
 
   return (
     <div className="table_container">
@@ -27,7 +35,13 @@ export const MainTable = () => {
         <div> Actions </div>
       </div>
       {sheetList.map((instance) => {
-        return <TableRow instanceInfo={instance} key={instance.id} />;
+        return (
+          <TableRow
+            instanceInfo={instance}
+            key={instance.id}
+            onDelete={handleDeleteRow}
+          />
+        );
       })}
     </div>
   );

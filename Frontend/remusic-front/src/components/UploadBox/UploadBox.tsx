@@ -1,11 +1,55 @@
 import { useState } from "react";
 import "./UploadBox.css";
+import { MainAPI } from "../../data/api_endpoints/enpoints";
+import { useNavigate } from "react-router-dom";
 
 export const UploadBox = () => {
   const [valName, setValName] = useState("");
   const [valImg, setValImg] = useState<File | null>(null);
+  const navigate = useNavigate();
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    let imgBase64: string | null = null;
+    if (valImg) {
+      imgBase64 = await new Promise<string | null>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          const base64 = result.split(",")[1];
+          resolve(base64);
+        };
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(valImg);
+      });
+    }
+
+    const payload = {
+      id: 0,
+      name: valName,
+      image_blob: imgBase64,
+    };
+
+    try {
+      const response = await fetch(MainAPI, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        // handle error
+        console.error("Upload failed");
+        return;
+      }
+      navigate("/gallery");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

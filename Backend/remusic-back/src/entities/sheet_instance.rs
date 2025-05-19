@@ -9,9 +9,12 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub name: String,
-    pub image_path: String,
-    pub music_xml_path: Option<String>,
-    pub midi_path: Option<String>,
+    #[sea_orm(column_type = "VarBinary(StringLen::None)")]
+    pub image_blob: Vec<u8>,
+    #[sea_orm(column_type = "VarBinary(StringLen::None)", nullable)]
+    pub music_xml_blob: Option<Vec<u8>>,
+    #[sea_orm(column_type = "VarBinary(StringLen::None)", nullable)]
+    pub midi_blob: Option<Vec<u8>>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation, Serialize, Deserialize)]

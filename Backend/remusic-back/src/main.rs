@@ -1,5 +1,4 @@
 use actix_web::{App, HttpServer, web};
-use controllers::sheet_instance_controller::{get_sheets, post_sheet};
 use env_logger::Env;
 use migrator::Migrator;
 use sea_orm::{Database, DatabaseConnection};
@@ -14,6 +13,7 @@ mod migrator;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    //Local Dev Env
     const DATABASE_URL: &str = "postgresql://user:password@localhost:6432/postgres";
 
     let db: DatabaseConnection = Database::connect(DATABASE_URL)
@@ -36,11 +36,11 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(db.clone()))
-            .service(get_sheets)
-            .service(post_sheet)
+            .service(controllers::sheet_instance_controller::get_sheets)
+            .service(controllers::sheet_instance_controller::post_sheet)
             .service(controllers::sheet_instance_controller::get_sheet)
+            .service(controllers::sheet_instance_controller::delete_sheet)
         // .service(controllers::sheet_instance_controller::put_sheet)
-        // .service(controllers::sheet_instance_controller::delete_sheet)
     })
     .bind(("127.0.0.1", 8080))?
     .run()

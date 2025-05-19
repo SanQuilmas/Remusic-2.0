@@ -1,4 +1,6 @@
-use crate::entities::{prelude::*, *};
+use crate::entities::{dto_sheet_instance::DtoCreateSheetInstance, prelude::*, *};
+use actix_web::{HttpResponse, Responder};
+use base64::{Engine, engine::general_purpose};
 use sea_orm::*;
 
 // let mut temp =
@@ -9,38 +11,63 @@ use sea_orm::*;
 // /logo.webp
 //     temp._set_musicxml_path(String::from("/MozaVeilSample.xml"));
 
-pub async fn find_all(conn: DatabaseConnection) -> Vec<sheet_instance::Model> {
-    let sheet_list: Vec<sheet_instance::Model> = SheetInstance::find()
+pub async fn find_all(conn: DatabaseConnection) -> Vec<DtoCreateSheetInstance> {
+    let sheet_list: Vec<DtoCreateSheetInstance> = SheetInstance::find()
         .all(&conn)
         .await
-        .expect("Error Getting All Sheets");
+        .expect("Error Getting All Sheets")
+        .into_iter()
+        .map(DtoCreateSheetInstance::from)
+        .collect();
 
     sheet_list
 }
 
-pub async fn find_by_id(id: i32, conn: DatabaseConnection) -> Option<sheet_instance::Model> {
-    let found_sheet: Option<sheet_instance::Model> = SheetInstance::find_by_id(id)
+pub async fn find_by_id(id: i32, conn: DatabaseConnection) -> Option<DtoCreateSheetInstance> {
+    let found_sheet: Option<DtoCreateSheetInstance> = SheetInstance::find_by_id(id)
         .one(&conn)
         .await
-        .expect("Error getting sheet by id");
+        .expect("Error getting sheet by id")
+        .map(DtoCreateSheetInstance::from);
     found_sheet
 }
 
 pub async fn create_instance(req_body: String, conn: DatabaseConnection) -> sheet_instance::Model {
-    let info: sheet_instance::Model =
+    let info: DtoCreateSheetInstance =
         serde_json::from_str(&req_body).expect("Failed to deserialize JSON");
+
+    let image_blob_bytes: Vec<u8> = general_purpose::STANDARD
+        .decode(&info.image_blob)
+        .expect("Failed to decode base64 image_blob");
 
     let new_instance = sheet_instance::ActiveModel {
         id: ActiveValue::not_set(),
         name: ActiveValue::Set(info.name),
-        image_path: ActiveValue::Set(info.image_path),
-        music_xml_path: ActiveValue::Set(info.music_xml_path),
-        midi_path: ActiveValue::Set(info.midi_path),
+        image_blob: ActiveValue::Set(image_blob_bytes),
+        music_xml_blob: ActiveValue::not_set(),
+        midi_blob: ActiveValue::not_set(),
     };
     new_instance
         .insert(&conn)
         .await
         .expect("Failed to insert into Database")
+}
+
+pub async fn delete_by_id(id: i32, conn: DatabaseConnection) -> impl Responder {
+    let deleted_entry = sheet_instance::ActiveModel {
+        id: ActiveValue::Set(id), // The primary key must be set
+        ..Default::default()
+    };
+    match deleted_entry.delete(&conn).await {
+        Ok(delete_result) => {
+            if delete_result.rows_affected > 0 {
+                HttpResponse::Ok().body("Deleted successfully")
+            } else {
+                HttpResponse::NotFound().body("No entry found with that id")
+            }
+        }
+        Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
+    }
 }
 
 // pub fn put_instance(_id: i32, req_body: String) -> SheetInstance {
