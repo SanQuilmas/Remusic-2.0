@@ -35,7 +35,7 @@ export const UploadBox = () => {
       const response = await fetch(MainAPI, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "text/plain",
         },
         body: JSON.stringify(payload),
       });
