@@ -1,4 +1,4 @@
-use crate::entities::{dto_sheet_instance::DtoCreateSheetInstance, prelude::*, *};
+use crate::entities::{dto_sheet_instance::{DtoCreateSheetInstance, DtoUpdateSheetInstance}, prelude::*, *};
 use actix_web::{HttpResponse, Responder};
 use base64::{Engine, engine::general_purpose};
 use sea_orm::*;
@@ -70,6 +70,25 @@ pub async fn delete_by_id(id: i32, conn: DatabaseConnection) -> impl Responder {
     }
 }
 
-// pub fn put_instance(_id: i32, req_body: String) -> SheetInstance {
-//     serde_json::from_str(&req_body).expect("Failed to deserialize JSON")
-// }
+pub async fn patch_instance(id: i32, req_body: String, conn: DatabaseConnection) -> sheet_instance::Model {
+    let info: DtoUpdateSheetInstance = serde_json::from_str(&req_body).expect("Failed to deserialize JSON");
+
+    let old_instance = SheetInstance::find_by_id(id)
+        .one(&conn)
+        .await
+        .expect("Error getting sheet by id")
+        .unwrap();
+
+    let updated_instance = sheet_instance::ActiveModel {
+        id: ActiveValue::Set(id),
+        name: ActiveValue::Set(old_instance.name),
+        image_blob: ActiveValue::Set(old_instance.image_blob),
+        music_xml_blob: ActiveValue::Set(info.music_xml_blob),
+        midi_blob: ActiveValue::Set(info.midi_blob),
+    };
+
+    updated_instance
+    .update(&conn)
+    .await
+    .expect("Failed to update sheet instance")
+}

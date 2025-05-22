@@ -19,3 +19,20 @@ impl From<Model> for DtoCreateSheetInstance {
         }
     }
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct DtoUpdateSheetInstance {
+    pub id: i32,
+    pub music_xml_blob: Option<Vec<u8>>,
+    pub midi_blob: Option<Vec<u8>>,
+}
+
+impl From<Model> for DtoUpdateSheetInstance {
+    fn from(model: Model) -> Self {
+        DtoUpdateSheetInstance {
+            id: model.id,
+            music_xml_blob: model.music_xml_blob,
+            midi_blob: model.midi_blob,
+        }
+    }
+}
