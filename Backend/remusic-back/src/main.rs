@@ -13,7 +13,7 @@ mod migrator;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    //Local Prod Env
+    // Prod Env
     const DATABASE_URL: &str = "postgresql://user:password@postgresdb:5432/postgres";
     //Local Dev Env
     // const DATABASE_URL: &str = "postgresql://user:password@localhost:6432/postgres";
@@ -42,9 +42,12 @@ async fn main() -> std::io::Result<()> {
             .service(controllers::sheet_instance_controller::post_sheet)
             .service(controllers::sheet_instance_controller::get_sheet)
             .service(controllers::sheet_instance_controller::delete_sheet)
-        // .service(controllers::sheet_instance_controller::put_sheet)
+            .service(controllers::sheet_instance_controller::put_sheet)
     })
-    .bind(("127.0.0.1", 8080))?
+    //Local Dev Env
+    // .bind(("127.0.0.1", 8080))?
+    // Prod Env
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }
