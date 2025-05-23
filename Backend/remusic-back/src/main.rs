@@ -13,8 +13,10 @@ mod migrator;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    //Local Prod Env
+    const DATABASE_URL: &str = "postgresql://user:password@postgresdb:5432/postgres";
     //Local Dev Env
-    const DATABASE_URL: &str = "postgresql://user:password@localhost:6432/postgres";
+    // const DATABASE_URL: &str = "postgresql://user:password@localhost:6432/postgres";
 
     let db: DatabaseConnection = Database::connect(DATABASE_URL)
         .await
