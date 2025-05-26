@@ -1,3 +1,4 @@
+use crate::entities::dto_sheet_instance::DtoUpdateSheetInstance;
 use crate::entities::{dto_sheet_instance::DtoCreateSheetInstance, prelude::*, *};
 use crate::env_variables::{MACHINE_FOLDER_PATH, MACHINE_FOLDER_URL};
 use actix_web::{HttpResponse, Responder};
@@ -84,48 +85,57 @@ pub async fn delete_by_id(id: i32, conn: DatabaseConnection) -> impl Responder {
     }
 }
 
-// pub async fn put_instance(
-//     id: i32,
-//     req_body: String,
-//     conn: DatabaseConnection,
-// ) -> sheet_instance::Model {
-//     let info: DtoUpdateSheetInstance =
-//         serde_json::from_str(&req_body).expect("Failed to deserialize JSON");
+pub async fn put_instance(
+    id: i32,
+    req_body: String,
+    conn: DatabaseConnection,
+) -> sheet_instance::Model {
+    let info: DtoUpdateSheetInstance =
+        serde_json::from_str(&req_body).expect("Failed to deserialize JSON");
 
-//     let music_xml_blob_bytes: Vec<u8> = general_purpose::STANDARD
-//         .decode(&info.music_xml_blob.unwrap())
-//         .expect("Failed to decode base64 music_xml_blob");
+    let music_xml_blob_bytes: Vec<u8> = general_purpose::STANDARD
+        .decode(&info.music_xml_blob.unwrap())
+        .expect("Failed to decode base64 music_xml_blob");
 
-//     let midi_blob_bytes: Vec<u8> = general_purpose::STANDARD
-//         .decode(&info.midi_blob.unwrap())
-//         .expect("Failed to decode base64 midi_blob");
+    let midi_blob_bytes: Vec<u8> = general_purpose::STANDARD
+        .decode(&info.midi_blob.unwrap())
+        .expect("Failed to decode base64 midi_blob");
 
-//     let old_instance = SheetInstance::find_by_id(id)
-//         .one(&conn)
-//         .await
-//         .expect("Error getting sheet by id")
-//         .unwrap();
+    let old_instance = SheetInstance::find_by_id(id)
+        .one(&conn)
+        .await
+        .expect("Error getting sheet by id")
+        .unwrap();
 
-// let music_xml_path = format!("{}/{}_music_xml.xml", folder_path, info.id);
-// let _xml_file = fs::File::create(&music_xml_path).expect("Failed to create XML file");
+    let folder_path = MACHINE_FOLDER_PATH.to_owned() + &old_instance.name;
+    let folder_url = format!("{}{}", MACHINE_FOLDER_URL, &old_instance.name);
 
-// let music_xml_url = format!("{}/{}_music_xml.xml", &folder_url, info.id);
+    let music_xml_path = format!("{}/{}_music_xml.xml", folder_path, info.id);
+    let mut xml_file = fs::File::create(&music_xml_path).expect("Failed to create XML file");
+    xml_file
+        .write_all(&music_xml_blob_bytes)
+        .expect("Failed to write image data");
 
-// let music_midi_path = format!("{}/{}_music_midi.mid", folder_path, info.id);
-// let _midi_file = fs::File::create(&music_midi_path).expect("Failed to create MIDI file");
+    let music_xml_url = format!("{}/{}_music_xml.xml", &folder_url, info.id);
 
-// let music_midi_url = format!("{}/{}_music_midi.mid", &folder_url, info.id);
+    let music_midi_path = format!("{}/{}_music_midi.mid", folder_path, info.id);
+    let mut midi_file = fs::File::create(&music_midi_path).expect("Failed to create MIDI file");
+    midi_file
+        .write_all(&midi_blob_bytes)
+        .expect("Failed to write image data");
 
-//     let updated_instance = sheet_instance::ActiveModel {
-//         id: ActiveValue::Set(id),
-//         name: ActiveValue::Set(old_instance.name),
-//         image_blob: ActiveValue::Set(old_instance.image_blob),
-//         music_xml_blob: ActiveValue::Set(Some(music_xml_blob_bytes)),
-//         midi_blob: ActiveValue::Set(Some(midi_blob_bytes)),
-//     };
+    let music_midi_url = format!("{}/{}_music_midi.mid", &folder_url, info.id);
 
-//     updated_instance
-//         .update(&conn)
-//         .await
-//         .expect("Failed to update sheet instance")
-// }
+    let updated_instance = sheet_instance::ActiveModel {
+        id: ActiveValue::Set(id),
+        name: ActiveValue::Set(old_instance.name),
+        image_path: ActiveValue::Set(old_instance.image_path),
+        music_xml_path: ActiveValue::Set(Some(music_xml_url)),
+        midi_path: ActiveValue::Set(Some(music_midi_url)),
+    };
+
+    updated_instance
+        .update(&conn)
+        .await
+        .expect("Failed to update sheet instance")
+}

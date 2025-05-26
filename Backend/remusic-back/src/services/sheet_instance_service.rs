@@ -31,12 +31,12 @@ pub async fn delete_sheet_instance(id: i32, conn: DatabaseConnection) -> impl Re
     delete_by_id(id, conn.clone()).await
 }
 
-// pub async fn put_sheet_instance(
-//     id: i32,
-//     req_body: String,
-//     conn: DatabaseConnection,
-// ) -> impl Responder {
-//     let sheet_instance: sheet_instance::Model =
-//         repositories::sheet_instance_repository::put_instance(id, req_body, conn.clone()).await;
-//     HttpResponse::Ok().json(sheet_instance)
-// }
+pub async fn put_sheet_instance(
+    id: i32,
+    req_body: String,
+    conn: DatabaseConnection,
+) -> impl Responder {
+    let sheet_instance: sheet_instance::Model =
+        repositories::sheet_instance_repository::put_instance(id, req_body, conn.clone()).await;
+    HttpResponse::Ok().json(sheet_instance)
+}

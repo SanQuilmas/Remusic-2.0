@@ -1,4 +1,4 @@
-use actix_web::{Responder, delete, get, post, web};
+use actix_web::{Responder, delete, get, post, put, web};
 use log::info;
 use sea_orm::*;
 
@@ -36,17 +36,17 @@ pub async fn delete_sheet(
     crate::services::sheet_instance_service::delete_sheet_instance(id, conn.get_ref().clone()).await
 }
 
-// #[put("/sheet/{id}")]
-// pub async fn put_sheet(
-//     path: web::Path<i32>,
-//     req_body: String,
-//     conn: web::Data<DatabaseConnection>,
-// ) -> impl Responder {
-//     let id = path.into_inner();
-//     crate::services::sheet_instance_service::put_sheet_instance(
-//         id,
-//         req_body,
-//         conn.get_ref().clone(),
-//     )
-//     .await
-// }
+#[put("/sheet/{id}")]
+pub async fn put_sheet(
+    path: web::Path<i32>,
+    req_body: String,
+    conn: web::Data<DatabaseConnection>,
+) -> impl Responder {
+    let id = path.into_inner();
+    crate::services::sheet_instance_service::put_sheet_instance(
+        id,
+        req_body,
+        conn.get_ref().clone(),
+    )
+    .await
+}
