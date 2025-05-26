@@ -42,7 +42,8 @@ export const UploadBox = () => {
 
       if (!response.ok) {
         // handle error
-        console.error("Upload failed");
+        console.error("Upload failed - Error: ");
+        console.log(response);
         return;
       }
       navigate("/gallery");
