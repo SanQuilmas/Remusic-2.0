@@ -1,3 +1,4 @@
+use actix_cors::Cors;
 use actix_web::{App, HttpServer, web};
 use env_logger::Env;
 use migrator::Migrator;
@@ -37,6 +38,12 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .wrap(
+                Cors::default()
+                    .allow_any_origin()
+                    .allow_any_method()
+                    .allow_any_header(),
+            )
             .app_data(web::Data::new(db.clone()))
             .service(controllers::sheet_instance_controller::get_sheets)
             .service(controllers::sheet_instance_controller::post_sheet)
