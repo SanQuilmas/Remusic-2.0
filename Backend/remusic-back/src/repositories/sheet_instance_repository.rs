@@ -1,19 +1,12 @@
 use crate::entities::dto_sheet_instance::DtoUpdateSheetInstance;
 use crate::entities::{dto_sheet_instance::DtoCreateSheetInstance, prelude::*, *};
 use crate::env_variables::{MACHINE_FOLDER_PATH, MACHINE_FOLDER_URL};
+use crate::utilities::kafka_producer::kafka_produce_message;
 use actix_web::{HttpResponse, Responder};
 use base64::{Engine, engine::general_purpose};
 use sea_orm::*;
 use std::fs;
 use std::io::Write;
-
-// let mut temp =
-//         SheetInstance::build_sheet_instance(id, "Yo".to_owned(), "image_path".to_owned());
-//     temp._set_midi_path(String::from(
-//         "https://magenta.github.io/magenta-js/music/demos/melody.mid",
-//     ));
-// /logo.webp
-//     temp._set_musicxml_path(String::from("/MozaVeilSample.xml"));
 
 pub async fn find_all(conn: DatabaseConnection) -> Vec<sheet_instance::Model> {
     let sheet_list: Vec<sheet_instance::Model> = SheetInstance::find()
@@ -62,10 +55,20 @@ pub async fn create_instance(req_body: String, conn: DatabaseConnection) -> shee
         music_xml_path: ActiveValue::NotSet,
         midi_path: ActiveValue::NotSet,
     };
-    new_instance
+
+    let inserted_instance = new_instance
         .insert(&conn)
         .await
-        .expect("Failed to insert into Database")
+        .expect("Failed to insert into Database");
+
+    let message_payload =
+        serde_json::to_string(&inserted_instance).expect("Failed to serialize inserted instance");
+
+    if let Err(e) = kafka_produce_message("newly_created", &message_payload, info.id).await {
+        eprintln!("Kafka error: {}", e);
+    }
+
+    inserted_instance
 }
 
 pub async fn delete_by_id(id: i32, conn: DatabaseConnection) -> impl Responder {
@@ -134,8 +137,17 @@ pub async fn put_instance(
         midi_path: ActiveValue::Set(Some(music_midi_url)),
     };
 
-    updated_instance
+    let uptodate_instance = updated_instance
         .update(&conn)
         .await
-        .expect("Failed to update sheet instance")
+        .expect("Failed to update sheet instance");
+
+    let message_payload =
+        serde_json::to_string(&uptodate_instance).expect("Failed to serialize updated instance");
+
+    if let Err(e) = kafka_produce_message("already_updated", &message_payload, info.id).await {
+        eprintln!("Kafka error: {}", e);
+    }
+
+    uptodate_instance
 }

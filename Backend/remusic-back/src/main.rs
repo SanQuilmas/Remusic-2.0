@@ -13,6 +13,7 @@ mod services;
 
 mod env_variables;
 mod migrator;
+mod utilities;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
