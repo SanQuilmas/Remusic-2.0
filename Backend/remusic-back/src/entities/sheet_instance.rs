@@ -9,7 +9,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub name: String,
-    pub image_path: String,
+    pub image_path: Option<String>,
     pub music_xml_path: Option<String>,
     pub midi_path: Option<String>,
 }

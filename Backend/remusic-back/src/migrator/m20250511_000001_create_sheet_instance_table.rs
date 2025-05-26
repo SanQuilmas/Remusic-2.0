@@ -24,7 +24,7 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(SheetInstance::Name).string().not_null())
-                    .col(ColumnDef::new(SheetInstance::ImagePath).string().not_null())
+                    .col(ColumnDef::new(SheetInstance::ImagePath).string().null())
                     .col(ColumnDef::new(SheetInstance::MusicXmlPath).string().null())
                     .col(ColumnDef::new(SheetInstance::MidiPath).string().null())
                     .to_owned(),

@@ -13,6 +13,6 @@ pub struct DtoCreateSheetInstance {
 #[derive(Serialize, Deserialize)]
 pub struct DtoUpdateSheetInstance {
     pub id: i32,
-    pub music_xml_blob: Option<Vec<u8>>,
-    pub midi_blob: Option<Vec<u8>>,
+    pub music_xml_blob: Option<String>,
+    pub midi_blob: Option<String>,
 }
