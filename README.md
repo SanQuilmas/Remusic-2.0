@@ -24,6 +24,8 @@ ReMusic 2.0 is the next evolution of the ReMusic project, designed to scan physi
 
 After cloning the repository, follow these steps to set up ReMusic 2.0. The order of operations is important.
 
+#### Local Dev Enviorment
+
 #### Podman Virtual Network
 
 ```bash
@@ -37,8 +39,6 @@ podman network create mynetwork
 # Use this command to use the preconfigured ENV
 podman run -d --name postgresdb --network mynetwork -e POSTGRES_DB=postgres -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -p 6432:5432 postgres:17.4-alpine
 ```
-
-#### Local Dev Enviorment
 
 ##### Kafka Instance
 
@@ -73,26 +73,24 @@ npm install
 npm run dev
 ```
 
-#### Prod Enviorment
+#### Production Environment
 
-##### Kafka Instance
+This is the preferred way to set up. There is a Docker Compose config that handles everything.
+
+###### Podman Virtual Network
 
 ```bash
-# Use this command to use the preconfigured ENV
-podman run -d -p 9092:9092 --name broker --network mynetwork -e KAFKA_NODE_ID=1 -e KAFKA_PROCESS_ROLES=broker,controller -e KAFKA_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://broker:9092 -e KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER -e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT -e KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:9093 -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 -e KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1 -e KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1 -e KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0 -e KAFKA_NUM_PARTITIONS=1 apache/kafka:latest
+# Use this command to create the network
+podman network create mynetwork
 ```
 
-##### Backend
+##### Everything Else
 
-See specific instructions for Docker setup in Backend Readme
+```bash
+podman compose up
+```
 
-##### Conversion Microservice
-
-See specific instructions for Docker setup in Music Converter Microservice Readme
-
-##### Frontend
-
-See specific instructions for Docker setup in Frontend Readme
+Sometimes it might be necessary to start the conversion instance manually from the Podman GUI.
 
 ### Technologies Used
 
