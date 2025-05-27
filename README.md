@@ -34,7 +34,7 @@ After cloning the repository, follow these steps to set up ReMusic 2.0. The orde
 
 This is the preferred way to set up. There is a Docker Compose config that handles everything.
 
-###### Podman Virtual Network
+##### Podman Virtual Network
 
 ```bash
 # Use this command to create the network
@@ -51,14 +51,14 @@ Sometimes it might be necessary to start the conversion instance manually from t
 
 #### Local Dev Enviorment
 
-#### Podman Virtual Network
+##### Podman Virtual Network
 
 ```bash
 # Use this command to use the preconfigured ENV
 podman network create mynetwork
 ```
 
-#### Database
+##### Database
 
 ```bash
 # Use this command to use the preconfigured ENV
