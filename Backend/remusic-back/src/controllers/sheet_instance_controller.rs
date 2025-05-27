@@ -42,6 +42,7 @@ pub async fn put_sheet(
     req_body: String,
     conn: web::Data<DatabaseConnection>,
 ) -> impl Responder {
+    info!("Put Sheet Service Called");
     let id = path.into_inner();
     crate::services::sheet_instance_service::put_sheet_instance(
         id,

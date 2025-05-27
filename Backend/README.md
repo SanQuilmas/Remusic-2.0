@@ -7,5 +7,5 @@ podman build -t backend -f Dockerfile
 ```
 
 ```bash
-podman run -d --name backend --network mynetwork -p 8080:8080 -v /home/leonel/Virtual\ Machines/remusic/:/app/remusic backend
+podman run -d --name backend --network mynetwork -p 8080:8080 -v /home/leonel/Virtual\ Machines/remusic/static:/app/remusic/static backend
 ```

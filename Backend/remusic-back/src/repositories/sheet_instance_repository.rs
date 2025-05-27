@@ -83,7 +83,12 @@ pub async fn create_instance(req_body: String, conn: DatabaseConnection) -> shee
     let message_payload =
         serde_json::to_string(&inserted_instance).expect("Failed to serialize inserted instance");
 
-    if let Err(e) = kafka_produce_message(KAFKA_NOT_UPDATED_TOPIC, &message_payload, info.id).await
+    if let Err(e) = kafka_produce_message(
+        KAFKA_NOT_UPDATED_TOPIC,
+        &message_payload,
+        inserted_instance.id,
+    )
+    .await
     {
         eprintln!("Kafka error: {}", e);
     }
@@ -170,7 +175,7 @@ pub async fn put_instance(
     if let Err(e) = kafka_produce_message(
         KAFKA_ALREADY_UPDATED_TOPIC,
         &message_payload,
-        old_instance.id,
+        uptodate_instance.id,
     )
     .await
     {

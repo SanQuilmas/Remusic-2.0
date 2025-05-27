@@ -11,11 +11,6 @@ export const MainTable = () => {
   const fetchData = async () => {
     const response = await fetch(MainAPI);
     const data: instanciaPartitura[] = await response.json();
-    // const dataWithImagePath = data.map((instance) => ({
-    //   ...instance,
-    //   image_path: `data:image/png;base64,${instance.image_blob}`,
-    // }));
-    // setSheetList(dataWithImagePath);
     setSheetList(data);
   };
 
