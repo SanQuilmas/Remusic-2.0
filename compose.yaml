@@ -34,14 +34,14 @@ services:
 
   backend:
     build:
-      context: /home/leonel/Projects/Code/Hobby/Rust/ReMusic 2.0/Backend/remusic-back/
+      context: ./Backend/remusic-back/
       dockerfile: Dockerfile
     image: backend
     container_name: backend
     ports:
       - "8080:8080"
     volumes:
-      - /home/leonel/Virtual Machines/remusic/static:/app/remusic/static
+      - ./remusic/static:/app/remusic/static
     networks:
       - mynetwork
     depends_on:
@@ -49,7 +49,7 @@ services:
 
   frontend:
     build:
-      context: /home/leonel/Projects/Code/Hobby/Rust/ReMusic 2.0/Frontend/remusic-front/
+      context: ./Frontend/remusic-front/
       dockerfile: Dockerfile
     image: frontend
     container_name: frontend
@@ -62,14 +62,14 @@ services:
 
   conversion:
     build:
-      context: /home/leonel/Projects/Code/Hobby/Rust/ReMusic 2.0/Music Converter Microservice/remusic-conversion/
+      context: ./Music Converter Microservice/remusic-conversion/
       dockerfile: Dockerfile
     image: conversion
     container_name: conversion
     ports:
       - "8060:8060"
     volumes:
-      - /home/leonel/Virtual Machines/remusic/temp:/app/temp
+      - ./remusic/temp:/app/temp
     networks:
       - mynetwork
     depends_on:
