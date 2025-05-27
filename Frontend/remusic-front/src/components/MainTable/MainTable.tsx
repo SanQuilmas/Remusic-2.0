@@ -4,6 +4,7 @@ import type { instanciaPartitura } from "../../data/entities_types/types";
 import { SheetListContext } from "../MainWindow/MainWindow";
 import { TableRow } from "../TableRow/TableRow";
 import "./MainTable.css";
+import { sanitizePath } from "../../utilities/StaticURLSanitize";
 
 export const MainTable = () => {
   const { sheetList, setSheetList } = useContext(SheetListContext);
@@ -11,7 +12,13 @@ export const MainTable = () => {
   const fetchData = async () => {
     const response = await fetch(MainAPI);
     const data: instanciaPartitura[] = await response.json();
-    setSheetList(data);
+    const sanitizedData = data.map((item) => ({
+      ...item,
+      image_path: sanitizePath(item.image_path),
+      music_xml_path: sanitizePath(item.music_xml_path),
+      midi_path: sanitizePath(item.midi_path),
+    }));
+    setSheetList(sanitizedData);
   };
 
   useEffect(() => {

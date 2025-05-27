@@ -5,6 +5,7 @@ import type { instanciaPartitura } from "../../data/entities_types/types";
 import { MidiBox } from "../MidiBox/MidiBox";
 import { SheetMusicBox } from "../SheetMusicBox/SheetMusicBox";
 import "./MainMusicContainer.css";
+import { sanitizePath } from "../../utilities/StaticURLSanitize";
 
 interface instanceContextType {
   instance: instanciaPartitura | null;
@@ -21,7 +22,13 @@ export const MainMusicContainer = () => {
   const fetchData = async () => {
     const response = await fetch(MainAPI + `/${instanceID.id}`);
     const data: instanciaPartitura = await response.json();
-    setInstance(data);
+    const sanitizedData: instanciaPartitura = {
+      ...data,
+      image_path: sanitizePath(data.image_path),
+      music_xml_path: sanitizePath(data.music_xml_path),
+      midi_path: sanitizePath(data.midi_path),
+    };
+    setInstance(sanitizedData);
   };
 
   useEffect(() => {
