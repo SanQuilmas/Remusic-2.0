@@ -1,5 +1,11 @@
 ## ReMusic 2.0
 
+![alt text](./showcase/img/upload_page.png)
+![alt text](./showcase/img/gallery_page.png)
+![alt text](./showcase/img/music_page.png)
+
+### Description
+
 ReMusic 2.0 is the next evolution of the ReMusic project, designed to scan physical sheet music and convert it into an editable digital format. This version introduces significant improvements in both performance and user experience:
 
 - **Rust Backend:** Harnessing the power of Rust for blazing-fast processing and enhanced scalability.
