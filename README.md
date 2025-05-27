@@ -30,6 +30,25 @@ ReMusic 2.0 is the next evolution of the ReMusic project, designed to scan physi
 
 After cloning the repository, follow these steps to set up ReMusic 2.0. The order of operations is important.
 
+#### Production Environment
+
+This is the preferred way to set up. There is a Docker Compose config that handles everything.
+
+###### Podman Virtual Network
+
+```bash
+# Use this command to create the network
+podman network create mynetwork
+```
+
+##### Everything Else
+
+```bash
+podman compose up
+```
+
+Sometimes it might be necessary to start the conversion instance manually from the Podman GUI.
+
 #### Local Dev Enviorment
 
 #### Podman Virtual Network
@@ -78,25 +97,6 @@ cd ReMusic 2.0/Frontend/remusic-front/
 npm install
 npm run dev
 ```
-
-#### Production Environment
-
-This is the preferred way to set up. There is a Docker Compose config that handles everything.
-
-###### Podman Virtual Network
-
-```bash
-# Use this command to create the network
-podman network create mynetwork
-```
-
-##### Everything Else
-
-```bash
-podman compose up
-```
-
-Sometimes it might be necessary to start the conversion instance manually from the Podman GUI.
 
 ### Technologies Used
 
