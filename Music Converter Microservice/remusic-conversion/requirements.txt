@@ -1,2 +1,4 @@
 kafka-python
 requests
+oemer
+music21
