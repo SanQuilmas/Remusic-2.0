@@ -11,6 +11,7 @@ POST_URL = 'http://backend:8080/sheet/'
 INPUT_TOPIC = 'newly_created'
 INPROGRESS_TOPIC = 'jobs_inprogress'
 DONE_TOPIC = 'newly_updated'
+ERROR_TOPIC = 'jobs_error'
 GROUP_ID = 'oemer-wrapper'
 
 OEMER_BINARY = './oemer'

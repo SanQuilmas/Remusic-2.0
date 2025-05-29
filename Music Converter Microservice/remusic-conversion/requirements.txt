@@ -1,4 +1,5 @@
 kafka-python
 requests
-oemer
+oemer[tf]
 music21
+tensorflow

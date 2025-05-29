@@ -56,9 +56,6 @@ def encode_file_to_base64(file_path):
     with open(file_path, "rb") as f:
         return base64.b64encode(f.read()).decode("utf-8")
 
-done_keys = get_processed_keys()
-print(f"Loaded processed keys: {done_keys}")
-
 def main():
     consumer = KafkaConsumer(INPUT_TOPIC,
                          group_id='my-group',
@@ -67,6 +64,10 @@ def main():
 
 
     producer = KafkaProducer(bootstrap_servers=[KAFKA_BROKER])
+
+
+    done_keys = get_processed_keys()
+    print(f"Loaded processed keys: {done_keys}")
 
     for message in consumer:
         key_str = message.key.decode('utf-8')
@@ -79,6 +80,7 @@ def main():
 
         producer.send(INPROGRESS_TOPIC, key=message.key, value=message.value)
         producer.flush()
+
         done_keys.add(key_str)
         print(f"In progress STATUS of {key_str} published to {INPROGRESS_TOPIC}")
 
@@ -92,30 +94,64 @@ def main():
         image_path = download_image(image_url, "/app/temp/" + key_str)
         print(f"Downloaded image to {image_path}")
 
+        os.makedirs(f"/app/temp/{key_str}/music_xml/", exist_ok=True)
+        os.makedirs(f"/app/temp/{key_str}/midi/", exist_ok=True)
+
         music_xml_path = f"/app/temp/{key_str}/music_xml/{key_str}_musicxml.musicxml"
-        midi_path = f"/app/temp/{key_str}/midi/{key_str}_midi.mid"
+        midi_path = f"/app/temp/{key_str}/midi/{key_str}_musicxml.mid"
 
-        print(f"Starting conversion process image->musicxml for {image_path}")
-        command = ["oemer", "-o", music_xml_path, image_path]
-        print(command)
-        result = subprocess.run(command, capture_output=True, check=True)
+        GLOBAL_ERROR = False
 
-        print(f"Starting conversion process musicxml->midi for {music_xml_path}")
-        command = ["python", "convert_xml_to_midi.py", f"/app/temp/{key_str}/music_xml/", f"/app/temp/{key_str}/midi/"]
-        print(command)
-        result = subprocess.run(command, capture_output=True, check=True)
+        try:
+            print(f"Starting conversion process image->musicxml for {image_path}")
+            command_music_xml = ["oemer", "-o", music_xml_path, image_path]
+            print(command_music_xml)
+            result = subprocess.run(command_music_xml, capture_output=True, check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error running command: {command_music_xml}")
+            print("Return code:", e.returncode)
+            print("Output:", e.output)
+            print("STDOUT:", e.stdout)
+            print("STDERR:", e.stderr)
+            GLOBAL_ERROR = True
+            raise
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+            raise
 
-        music_xml_base64 = encode_file_to_base64(music_xml_path)
-        midi_base64 = encode_file_to_base64(midi_path)
+        try:
+            print(f"Starting conversion process musicxml->midi for {music_xml_path}")
+            command_midi = ["python", "convert_xml_to_midi.py", f"/app/temp/{key_str}/music_xml/", f"/app/temp/{key_str}/midi/"]
+            print(command_midi)
+            result = subprocess.run(command_midi, capture_output=True, check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error running command: {command_midi}")
+            print("Return code:", e.returncode)
+            print("Output:", e.output)
+            print("STDOUT:", e.stdout)
+            print("STDERR:", e.stderr)
+            GLOBAL_ERROR = True
+            raise
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+            raise
 
-        payload = {
-            'id': int(key_str),
-            'music_xml_blob': music_xml_base64,
-            'midi_blob': midi_base64
-        }
-        print(f"Sending finished conversions to backend")
-        response = requests.put(POST_URL + key_str, json=payload)
-        print(f"PUT {POST_URL + key_str} status: {response.status_code}, response: {response.text}")
+        if not GLOBAL_ERROR:
+            music_xml_base64 = encode_file_to_base64(music_xml_path)
+            midi_base64 = encode_file_to_base64(midi_path)
+
+            payload = {
+                'id': int(key_str),
+                'music_xml_blob': music_xml_base64,
+                'midi_blob': midi_base64
+            }
+            print(f"Sending finished conversions to backend")
+            response = requests.put(POST_URL + key_str, json=payload)
+            print(f"PUT {POST_URL + key_str} status: {response.status_code}, response: {response.text}")
+        else:
+            producer.send(ERROR_TOPIC, key=message.key, value=message.value)
+            producer.flush()
+            print(f"ERROR STATUS of {key_str} published to {ERROR_TOPIC}")
 
 if __name__ == '__main__':
     main()
