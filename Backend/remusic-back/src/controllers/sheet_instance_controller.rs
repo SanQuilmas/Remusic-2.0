@@ -51,3 +51,9 @@ pub async fn put_sheet(
     )
     .await
 }
+
+#[get("/kafka/{topic_name}")]
+pub async fn get_kafka_keys(path: web::Path<String>) -> impl Responder {
+    info!("Kafka consumer service called, query: {:?}", path);
+    crate::services::sheet_instance_service::get_kafka_by_name(path.into_inner()).await
+}

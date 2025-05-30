@@ -73,10 +73,7 @@ services:
     networks:
       - mynetwork
     depends_on:
-      - backend
       - broker
-      - frontend
-      - postgresdb
 
 networks:
   mynetwork:

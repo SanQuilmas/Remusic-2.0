@@ -41,7 +41,16 @@ export const MainMusicContainer = () => {
       <div className="music_details">
         <div className="musicxml_column music_details_column">
           <div>
-            <a href="#"> Download MusicXml </a>
+            <a
+              href={
+                instance && instance.music_xml_path
+                  ? instance.music_xml_path
+                  : "#"
+              }
+            >
+              {" "}
+              Download MusicXml{" "}
+            </a>
           </div>
 
           <div>
@@ -51,7 +60,10 @@ export const MainMusicContainer = () => {
 
         <div className="musicmidi_column music_details_column">
           <div>
-            <a href="#"> Download MIDI </a>
+            <a href={instance && instance.midi_path ? instance.midi_path : "#"}>
+              {" "}
+              Download MIDI{" "}
+            </a>
           </div>
 
           <div>

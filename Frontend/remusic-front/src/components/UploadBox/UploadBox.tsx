@@ -27,7 +27,7 @@ export const UploadBox = () => {
 
     const payload = {
       id: 0,
-      name: valName,
+      name: valName.replace(/\s+/g, "_"),
       image_blob: imgBase64,
     };
 

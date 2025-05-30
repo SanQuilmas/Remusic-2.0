@@ -49,6 +49,7 @@ async fn main() -> std::io::Result<()> {
             .service(controllers::sheet_instance_controller::get_sheet)
             .service(controllers::sheet_instance_controller::delete_sheet)
             .service(controllers::sheet_instance_controller::put_sheet)
+            .service(controllers::sheet_instance_controller::get_kafka_keys)
     })
     .bind((IP_BIND, 8080))?
     .run()

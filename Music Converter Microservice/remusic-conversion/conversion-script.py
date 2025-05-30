@@ -11,8 +11,10 @@ from env_variables import (
     GROUP_ID,
     POST_URL,
     DONE_TOPIC,
-    OEMER_BINARY
+    OEMER_BINARY,
+    ERROR_TOPIC
 )
+import uuid
 
 def download_image(image_url, save_dir):
     os.makedirs(save_dir, exist_ok=True)
@@ -30,13 +32,13 @@ def download_image(image_url, save_dir):
 
 def get_processed_keys():
     in_progress_consumer = KafkaConsumer(INPROGRESS_TOPIC,
-                         group_id='my-group',
+                         group_id=f"my-group-{uuid.uuid4()}",
                          bootstrap_servers=[KAFKA_BROKER],
                          auto_offset_reset='earliest',
                          consumer_timeout_ms=1000)
 
     done_consumer = KafkaConsumer(DONE_TOPIC,
-                         group_id='my-group',
+                         group_id=f"my-group-{uuid.uuid4()}",
                          bootstrap_servers=[KAFKA_BROKER],
                          auto_offset_reset='earliest',
                          consumer_timeout_ms=1000)
@@ -58,20 +60,22 @@ def encode_file_to_base64(file_path):
 
 def main():
     consumer = KafkaConsumer(INPUT_TOPIC,
-                         group_id='my-group',
+                         group_id=f"my-group-{uuid.uuid4()}",
                          bootstrap_servers=[KAFKA_BROKER],
                          auto_offset_reset='earliest')
 
 
     producer = KafkaProducer(bootstrap_servers=[KAFKA_BROKER])
 
-
+    # done_keys = set()
     done_keys = get_processed_keys()
     print(f"Loaded processed keys: {done_keys}")
-
+    
     for message in consumer:
         key_str = message.key.decode('utf-8')
 
+        # done_keys.update(get_processed_keys())
+        # print(f"Loaded processed keys: {done_keys}")
 
         print(f"Checking key: {key_str} against done_keys: {done_keys}")
         if key_str in done_keys:
@@ -110,14 +114,9 @@ def main():
         except subprocess.CalledProcessError as e:
             print(f"Error running command: {command_music_xml}")
             print("Return code:", e.returncode)
-            print("Output:", e.output)
-            print("STDOUT:", e.stdout)
-            print("STDERR:", e.stderr)
             GLOBAL_ERROR = True
-            raise
         except Exception as e:
             print(f"Unexpected error: {e}")
-            raise
 
         try:
             print(f"Starting conversion process musicxml->midi for {music_xml_path}")
@@ -127,14 +126,9 @@ def main():
         except subprocess.CalledProcessError as e:
             print(f"Error running command: {command_midi}")
             print("Return code:", e.returncode)
-            print("Output:", e.output)
-            print("STDOUT:", e.stdout)
-            print("STDERR:", e.stderr)
             GLOBAL_ERROR = True
-            raise
         except Exception as e:
             print(f"Unexpected error: {e}")
-            raise
 
         if not GLOBAL_ERROR:
             music_xml_base64 = encode_file_to_base64(music_xml_path)

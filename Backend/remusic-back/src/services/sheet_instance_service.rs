@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use actix_web::{HttpResponse, Responder};
 use sea_orm::*;
 
@@ -7,6 +9,7 @@ use crate::{
         self,
         sheet_instance_repository::{delete_by_id, find_all, find_by_id},
     },
+    utilities::kafka_consumer::kafka_consume_messages,
 };
 
 pub async fn get_all_sheets(conn: DatabaseConnection) -> impl Responder {
@@ -39,4 +42,9 @@ pub async fn put_sheet_instance(
     let sheet_instance: sheet_instance::Model =
         repositories::sheet_instance_repository::put_instance(id, req_body, conn.clone()).await;
     HttpResponse::Ok().json(sheet_instance)
+}
+
+pub async fn get_kafka_by_name(topic: String) -> impl Responder {
+    let keys_map: HashMap<i32, String> = kafka_consume_messages(&topic).await;
+    HttpResponse::Ok().json(keys_map)
 }

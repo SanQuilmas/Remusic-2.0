@@ -34,7 +34,15 @@ export const TableRow = ({ instanceInfo, onDelete }: RowProps) => {
       </div>
       <div>
         {" "}
-        <Link to={`${instanceInfo.id}`}> View and Download Output </Link>{" "}
+        {instanceInfo.ERROR ? (
+          <p className="error_parraf">
+            ERROR: Operation failed — No output will be generated
+          </p>
+        ) : instanceInfo.DONE ? (
+          <Link to={`${instanceInfo.id}`}> View and Download Output </Link>
+        ) : (
+          <p>Loading...</p>
+        )}{" "}
       </div>
       <div>
         <button onClick={handleDeleteButtonClick}> Delete </button>
