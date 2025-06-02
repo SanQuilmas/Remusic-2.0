@@ -1,10 +1,10 @@
 import { useContext } from "react";
+import { InstanceContext } from "../../data/contexts/InstanceContext";
 import OpenSheetMusicDisplayComponent from "../OpenSheetMusicDisplayComponent/OpenSheetMusicDisplayComponent";
 import "./SheetMusicBox.css";
-import { instanceContext } from "../MainMusicContainer/MainMusicContainer";
 
 export const SheetMusicBox = () => {
-  const { instance } = useContext(instanceContext);
+  const { instance } = useContext(InstanceContext);
 
   return (
     <div className="music_container">

@@ -1,22 +1,22 @@
-import { useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { KafkaAPI, MainAPI } from "../../data/api_endpoints/enpoints";
+import { SheetListContext } from "../../data/contexts/SheetListContext";
 import type { instanciaPartitura } from "../../data/entities_types/types";
-import { SheetListContext } from "../MainWindow/MainWindow";
-import { TableRow } from "../TableRow/TableRow";
-import "./MainTable.css";
-import { sanitizePath } from "../../utilities/StaticURLSanitize";
 import {
   DONE_TOPIC,
   ERROR_TOPIC,
 } from "../../data/kafka_channels/kafka_channels";
+import { sanitizePath } from "../../utilities/StaticURLSanitize";
+import { TableRow } from "../TableRow/TableRow";
+import "./MainTable.css";
 
 export const MainTable = () => {
   const { sheetList, setSheetList } = useContext(SheetListContext);
 
   function updateSheetStatus(
     sheet_List: instanciaPartitura[],
-    doneIds: Number[],
-    errorIds: Number[]
+    doneIds: number[],
+    errorIds: number[]
   ) {
     return sheet_List.map((item) => ({
       ...item,
@@ -25,8 +25,7 @@ export const MainTable = () => {
     }));
   }
 
-  const fetchAndSetStatuses = async () => {
-    // Fetch both statuses in parallel
+  const fetchAndSetStatuses = useCallback(async () => {
     const [doneRes, errorRes] = await Promise.all([
       fetch(KafkaAPI + "/" + DONE_TOPIC),
       fetch(KafkaAPI + "/" + ERROR_TOPIC),
@@ -34,16 +33,15 @@ export const MainTable = () => {
     const doneData = await doneRes.json();
     const errorData = await errorRes.json();
 
-    // Get the keys as numbers
     const DONE_KEYS = Object.keys(doneData).map((entry) => Number(entry));
     const ERROR_KEYS = Object.keys(errorData).map((entry) => Number(entry));
 
     setSheetList((prevSheetList) =>
       updateSheetStatus(prevSheetList, DONE_KEYS, ERROR_KEYS)
     );
-  };
+  }, [setSheetList]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const response = await fetch(MainAPI);
     const data: instanciaPartitura[] = await response.json();
     const sanitizedData = data.map((item) => ({
@@ -53,21 +51,7 @@ export const MainTable = () => {
       midi_path: sanitizePath(item.midi_path),
     }));
     setSheetList(sanitizedData);
-  };
-
-  // const fetchDoneStatus = async () => {
-  //   const response = await fetch(KafkaAPI + "/" + DONE_TOPIC);
-  //   const data = await response.json();
-  //   const DONE_KEYS = Object.keys(data).map((entry) => Number(entry));
-  //   console.log(DONE_KEYS);
-  // };
-
-  // const fetchERRORStatus = async () => {
-  //   const response = await fetch(KafkaAPI + "/" + ERROR_TOPIC);
-  //   const data = await response.json();
-  //   const ERROR_KEYS = Object.keys(data).map((entry) => Number(entry));
-  //   console.log(ERROR_KEYS);
-  // };
+  }, [setSheetList]);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -75,7 +59,7 @@ export const MainTable = () => {
       await fetchAndSetStatuses();
     };
     fetchAll();
-  }, []);
+  }, [fetchAndSetStatuses, fetchData]);
 
   const handleDeleteRow = (id: number) => {
     setSheetList((prevList) => prevList.filter((item) => item.id !== id));

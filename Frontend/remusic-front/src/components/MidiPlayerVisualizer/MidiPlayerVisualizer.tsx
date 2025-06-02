@@ -21,11 +21,14 @@ export const MidiPlayerVisualizer = ({
     player.soundFont = "";
     visualizer.type = "piano-roll";
 
-    if (playerRef.current) {
-      playerRef.current.appendChild(player);
+    const playerCurrent = playerRef.current;
+    const visualizerCurrent = visualizerRef.current;
+
+    if (playerCurrent) {
+      playerCurrent.appendChild(player);
     }
-    if (visualizerRef.current) {
-      visualizerRef.current.appendChild(visualizer);
+    if (visualizerCurrent) {
+      visualizerCurrent.appendChild(visualizer);
     }
 
     // Connect visualizer to player
@@ -33,8 +36,8 @@ export const MidiPlayerVisualizer = ({
 
     // Cleanup on unmount
     return () => {
-      if (playerRef.current) playerRef.current.removeChild(player);
-      if (visualizerRef.current) visualizerRef.current.removeChild(visualizer);
+      if (playerCurrent) playerCurrent.removeChild(player);
+      if (visualizerCurrent) visualizerCurrent.removeChild(visualizer);
     };
   }, [music_midi]);
 

@@ -1,25 +1,18 @@
-import { createContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MainAPI } from "../../data/api_endpoints/enpoints";
+import { InstanceContext } from "../../data/contexts/InstanceContext";
 import type { instanciaPartitura } from "../../data/entities_types/types";
+import { sanitizePath } from "../../utilities/StaticURLSanitize";
 import { MidiBox } from "../MidiBox/MidiBox";
 import { SheetMusicBox } from "../SheetMusicBox/SheetMusicBox";
 import "./MainMusicContainer.css";
-import { sanitizePath } from "../../utilities/StaticURLSanitize";
-
-interface instanceContextType {
-  instance: instanciaPartitura | null;
-}
-
-const instanceContext = createContext<instanceContextType>({
-  instance: null,
-});
 
 export const MainMusicContainer = () => {
   const [instance, setInstance] = useState<instanciaPartitura | null>(null);
   const instanceID = useParams();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const response = await fetch(MainAPI + `/${instanceID.id}`);
     const data: instanciaPartitura = await response.json();
     const sanitizedData: instanciaPartitura = {
@@ -29,14 +22,14 @@ export const MainMusicContainer = () => {
       midi_path: sanitizePath(data.midi_path),
     };
     setInstance(sanitizedData);
-  };
+  }, [instanceID]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   return (
-    <instanceContext.Provider value={{ instance }}>
+    <InstanceContext.Provider value={{ instance }}>
       <h1> {instance ? instance.name : ""} </h1>
       <div className="music_details">
         <div className="musicxml_column music_details_column">
@@ -54,7 +47,7 @@ export const MainMusicContainer = () => {
           </div>
 
           <div>
-            <SheetMusicBox />
+            {instance && instance.music_xml_path ? <SheetMusicBox /> : ""}
           </div>
         </div>
 
@@ -66,13 +59,9 @@ export const MainMusicContainer = () => {
             </a>
           </div>
 
-          <div>
-            <MidiBox />
-          </div>
+          <div>{instance && instance.midi_path ? <MidiBox /> : ""}</div>
         </div>
       </div>
-    </instanceContext.Provider>
+    </InstanceContext.Provider>
   );
 };
-
-export { instanceContext };

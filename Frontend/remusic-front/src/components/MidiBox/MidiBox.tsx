@@ -1,9 +1,9 @@
 import { useContext } from "react";
+import { InstanceContext } from "../../data/contexts/InstanceContext";
 import { MidiPlayerVisualizer } from "../MidiPlayerVisualizer/MidiPlayerVisualizer";
-import { instanceContext } from "../MainMusicContainer/MainMusicContainer";
 
 export const MidiBox = () => {
-  const { instance } = useContext(instanceContext);
+  const { instance } = useContext(InstanceContext);
   return (
     <div>
       {instance && instance.midi_path ? (

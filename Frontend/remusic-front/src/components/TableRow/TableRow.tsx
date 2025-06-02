@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import "./TableRow.css";
-import type { instanciaPartitura } from "../../data/entities_types/types";
 import { MainAPI } from "../../data/api_endpoints/enpoints";
+import type { instanciaPartitura } from "../../data/entities_types/types";
+import "./TableRow.css";
 
 interface RowProps {
   instanceInfo: instanciaPartitura;

@@ -8,4 +8,4 @@ const FilesAPI = "/static";
 // const KafkaAPI = "http://localhost:8080/kafka";
 // const FilesAPI = "http://localhost:8080/static";
 
-export { MainAPI, KafkaAPI, FilesAPI };
+export { FilesAPI, KafkaAPI, MainAPI };

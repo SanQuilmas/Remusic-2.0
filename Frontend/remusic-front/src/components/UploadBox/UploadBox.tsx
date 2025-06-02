@@ -1,7 +1,7 @@
 import { useState } from "react";
-import "./UploadBox.css";
-import { MainAPI } from "../../data/api_endpoints/enpoints";
 import { useNavigate } from "react-router-dom";
+import { MainAPI } from "../../data/api_endpoints/enpoints";
+import "./UploadBox.css";
 
 export const UploadBox = () => {
   const [valName, setValName] = useState("");
