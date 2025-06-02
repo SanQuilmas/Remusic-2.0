@@ -39,7 +39,10 @@ export const TableRow = ({ instanceInfo, onDelete }: RowProps) => {
             ERROR: Operation failed — No output will be generated
           </p>
         ) : instanceInfo.DONE ? (
-          <Link to={`${instanceInfo.id}`}> View and Download Output </Link>
+          <Link to={`/details/${instanceInfo.id}`}>
+            {" "}
+            View and Download Output{" "}
+          </Link>
         ) : (
           <p>Loading...</p>
         )}{" "}

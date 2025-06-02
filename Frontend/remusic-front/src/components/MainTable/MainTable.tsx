@@ -9,9 +9,14 @@ import {
 import { sanitizePath } from "../../utilities/StaticURLSanitize";
 import { TableRow } from "../TableRow/TableRow";
 import "./MainTable.css";
+import { Link, useParams } from "react-router-dom";
+import { PAGE_LIMIT } from "../../data/variables/env_variables";
 
 export const MainTable = () => {
   const { sheetList, setSheetList } = useContext(SheetListContext);
+  const { id } = useParams();
+  const page = id !== undefined ? Number(id) : 1;
+  const pageCount = Math.ceil(sheetList.length / PAGE_LIMIT);
 
   function updateSheetStatus(
     sheet_List: instanciaPartitura[],
@@ -67,21 +72,39 @@ export const MainTable = () => {
 
   return (
     <div className="table_container">
+      <div className="page_numbers_container">
+        {Array.from({ length: pageCount }).map((_entry, index) => {
+          return (
+            <span className="page_numbers">
+              <Link to={`/gallery/${index + 1}`}>
+                <p>{index + 1}</p>
+              </Link>
+            </span>
+          );
+        })}
+      </div>
       <div className="table_header">
         <div> Name </div>
         <div> Image </div>
         <div> Details </div>
         <div> Actions </div>
       </div>
-      {sheetList.map((instance) => {
-        return (
-          <TableRow
-            instanceInfo={instance}
-            key={instance.id}
-            onDelete={handleDeleteRow}
-          />
-        );
-      })}
+      <div className="table_rows">
+        {sheetList.map((instance, index) => {
+          if (
+            index < page * PAGE_LIMIT &&
+            index >= page * PAGE_LIMIT - PAGE_LIMIT
+          ) {
+            return (
+              <TableRow
+                instanceInfo={instance}
+                key={instance.id}
+                onDelete={handleDeleteRow}
+              />
+            );
+          }
+        })}
+      </div>
     </div>
   );
 };

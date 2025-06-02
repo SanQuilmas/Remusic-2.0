@@ -19,14 +19,14 @@ const router = createBrowserRouter([
         path: "gallery",
         children: [
           {
-            index: true,
+            path: ":id?",
             element: <MainTable />,
           },
-          {
-            path: ":id",
-            element: <MainMusicContainer />,
-          },
         ],
+      },
+      {
+        path: "details/:id",
+        element: <MainMusicContainer />,
       },
     ],
   },
