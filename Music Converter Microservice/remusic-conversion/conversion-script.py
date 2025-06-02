@@ -15,6 +15,31 @@ from env_variables import (
     ERROR_TOPIC
 )
 import uuid
+import threading
+
+done_keys = set()
+
+def update_done_keys_from_topic():
+    global done_keys
+    consumer = KafkaConsumer(DONE_TOPIC,
+                             group_id="done-tracker",
+                             bootstrap_servers=[KAFKA_BROKER],
+                             auto_offset_reset='earliest')
+    for message in consumer:
+        key_str = message.key.decode('utf-8')
+        done_keys.add(key_str)
+        print(f"Adding done key: {key_str}")
+
+def update_in_progress_keys_from_topic():
+    global done_keys
+    consumer = KafkaConsumer(INPROGRESS_TOPIC,
+                             group_id="in-progress-tracker",
+                             bootstrap_servers=[KAFKA_BROKER],
+                             auto_offset_reset='earliest')
+    for message in consumer:
+        key_str = message.key.decode('utf-8')
+        done_keys.add(key_str)
+        print(f"Adding in progress key: {key_str}")
 
 def download_image(image_url, save_dir):
     os.makedirs(save_dir, exist_ok=True)
@@ -32,13 +57,11 @@ def download_image(image_url, save_dir):
 
 def get_processed_keys():
     in_progress_consumer = KafkaConsumer(INPROGRESS_TOPIC,
-                         group_id=f"my-group-{uuid.uuid4()}",
                          bootstrap_servers=[KAFKA_BROKER],
                          auto_offset_reset='earliest',
                          consumer_timeout_ms=1000)
 
     done_consumer = KafkaConsumer(DONE_TOPIC,
-                         group_id=f"my-group-{uuid.uuid4()}",
                          bootstrap_servers=[KAFKA_BROKER],
                          auto_offset_reset='earliest',
                          consumer_timeout_ms=1000)
@@ -46,11 +69,9 @@ def get_processed_keys():
 
     for message in in_progress_consumer:
         done_keys.add(message.key.decode('utf-8'))
-        pass
 
     for message in done_consumer:
         done_keys.add(message.key.decode('utf-8'))
-        pass
 
     return done_keys
 
@@ -60,22 +81,26 @@ def encode_file_to_base64(file_path):
 
 def main():
     consumer = KafkaConsumer(INPUT_TOPIC,
-                         group_id=f"my-group-{uuid.uuid4()}",
+                         group_id=f"my-group",
                          bootstrap_servers=[KAFKA_BROKER],
                          auto_offset_reset='earliest')
 
 
     producer = KafkaProducer(bootstrap_servers=[KAFKA_BROKER])
 
-    # done_keys = set()
-    done_keys = get_processed_keys()
+    threading.Thread(target=update_done_keys_from_topic, daemon=True).start()
+    threading.Thread(target=update_in_progress_keys_from_topic, daemon=True).start()
+
+    print("Starting up conversion middleware ...")
+
+    global done_keys
+    done_keys.update(get_processed_keys())
     print(f"Loaded processed keys: {done_keys}")
-    
+
     for message in consumer:
         key_str = message.key.decode('utf-8')
 
         # done_keys.update(get_processed_keys())
-        # print(f"Loaded processed keys: {done_keys}")
 
         print(f"Checking key: {key_str} against done_keys: {done_keys}")
         if key_str in done_keys:
@@ -85,7 +110,7 @@ def main():
         producer.send(INPROGRESS_TOPIC, key=message.key, value=message.value)
         producer.flush()
 
-        done_keys.add(key_str)
+        # done_keys.add(key_str)
         print(f"In progress STATUS of {key_str} published to {INPROGRESS_TOPIC}")
 
         value_str = message.value.decode('utf-8')
