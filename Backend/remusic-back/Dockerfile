@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN cargo build --release
+RUN cargo remove rdkafka && cargo add rdkafka && cargo build --release
 
 FROM debian:bookworm-slim
 
