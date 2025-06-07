@@ -74,6 +74,15 @@ services:
       - mynetwork
     depends_on:
       - broker
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
 
 networks:
   mynetwork:

@@ -1,6 +1,7 @@
 """Module with varios utility functions for file and process handling"""
 
 import base64
+import datetime
 import os
 import subprocess
 
@@ -34,12 +35,19 @@ def encode_file_to_base64(file_path):
 def run_subprocess(command, description):
     """Function that runs the necesary scripts."""
     try:
-        print(f"Starting {description} | {' '.join(command)}")
+        print(
+            f"{datetime.datetime.now()}: Starting {description} | {' '.join(command)}"
+        )
         subprocess.run(command, capture_output=True, check=True)
+        print(
+            f"{datetime.datetime.now()}: Finishing {description} | {' '.join(command)}"
+        )
         return False
     except subprocess.CalledProcessError as e:
         print(f"Error running command: {command}")
-        print("Return code:", e.returncode)
+        print(f"Return code: {e.returncode}")
+        print(f"Output: {e.output}")
+        print(f"Err: {e.stderr}")
     except OSError as e:
         print(f"OS error: {e}")
     except Exception as e:

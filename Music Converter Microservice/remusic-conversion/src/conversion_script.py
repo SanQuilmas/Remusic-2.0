@@ -85,7 +85,7 @@ def main():
 
         global_error = False
 
-        command_music_xml = ["oemer", "-o", music_xml_path, image_path]
+        command_music_xml = ["oemer", "-o", music_xml_path, "--use-tf", image_path]
         global_error |= run_subprocess(
             command=command_music_xml,
             description=f"conversion process image->musicxml for {image_path}",
