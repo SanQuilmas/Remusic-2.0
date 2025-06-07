@@ -59,25 +59,40 @@ export const UploadBox = () => {
   };
 
   return (
-    <form className="upload_container" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        name="music_name"
-        id="music_name"
-        value={valName}
-        onChange={(e) => setValName(e.target.value)}
-        required
-      />
-      <input
-        type="file"
-        accept="image/*"
-        capture="environment"
-        name="music_img"
-        id="music_img"
-        onChange={handleFileChange}
-        required
-      />
-      <button type="submit"> Upload and Digitize </button>
-    </form>
+    <div className="upload__main">
+      {valImg ? (
+        <div>
+          <h1>{valName}</h1>
+          <img
+            src={URL.createObjectURL(valImg)}
+            width={500}
+            height={500}
+            alt="preview"
+          />
+        </div>
+      ) : (
+        ""
+      )}
+      <form className="upload_container" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="music_name"
+          id="music_name"
+          value={valName}
+          onChange={(e) => setValName(e.target.value)}
+          required
+        />
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          name="music_img"
+          id="music_img"
+          onChange={handleFileChange}
+          required
+        />
+        <button type="submit"> Upload and Digitize </button>
+      </form>
+    </div>
   );
 };

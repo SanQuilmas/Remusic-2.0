@@ -1,14 +1,16 @@
 """Module with all the kafka functions used in the main script"""
 
 import time
+
 from kafka import KafkaConsumer, KafkaProducer
 from kafka.errors import NoBrokersAvailable
+
 from env_variables import (
-    KAFKA_BROKER,
-    INPROGRESS_TOPIC,
-    POST_URL,
     DONE_TOPIC,
     ERROR_TOPIC,
+    INPROGRESS_TOPIC,
+    KAFKA_BROKER,
+    POST_URL,
     WAIT_TIME,
 )
 
@@ -23,8 +25,9 @@ def update_done_keys_from_topic(done_keys):
     )
     for message in consumer:
         key_str = message.key.decode("utf-8")
-        done_keys.add(key_str)
-        print(f"Adding done key: {key_str}")
+        if key_str not in done_keys:
+            done_keys.add(key_str)
+            print(f"Adding done key: {key_str}")
 
 
 def update_in_progress_keys_from_topic(done_keys):
@@ -37,8 +40,9 @@ def update_in_progress_keys_from_topic(done_keys):
     )
     for message in consumer:
         key_str = message.key.decode("utf-8")
-        done_keys.add(key_str)
-        print(f"Adding in progress key: {key_str}")
+        if key_str not in done_keys:
+            done_keys.add(key_str)
+            print(f"Adding in progress key: {key_str}")
 
 
 def get_processed_keys():
@@ -103,7 +107,14 @@ def process_kafka_message(message, producer, done_keys):
         print(f"Skipping {POST_URL + key_str}")
         return False
 
-    producer.send(INPROGRESS_TOPIC, key=message.key, value=message.value)
+    return send_in_progress_status_to_kafka(
+        message.key, message.value, key_str, producer
+    )
+
+
+def send_in_progress_status_to_kafka(key_val, message_val, key_str, producer):
+    """Sends an update to in progress topic"""
+    producer.send(INPROGRESS_TOPIC, key=key_val, value=message_val)
     producer.flush()
     print(f"In progress STATUS of {key_str} published to {INPROGRESS_TOPIC}")
     return True

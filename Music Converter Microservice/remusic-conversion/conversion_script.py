@@ -3,20 +3,21 @@
 import json
 import os
 import threading
+
 from env_variables import (
-    KAFKA_BROKER,
-    INPUT_TOPIC,
     GROUP_ID,
+    INPUT_TOPIC,
+    KAFKA_BROKER,
     POST_URL,
 )
 from kafka_functions import (
-    wait_for_kafka_consumer,
-    wait_for_kafka_producer,
-    update_done_keys_from_topic,
-    update_in_progress_keys_from_topic,
     get_processed_keys,
     process_kafka_message,
     send_error_status_to_kafka,
+    update_done_keys_from_topic,
+    update_in_progress_keys_from_topic,
+    wait_for_kafka_consumer,
+    wait_for_kafka_producer,
 )
 from utility_functions import (
     download_image,

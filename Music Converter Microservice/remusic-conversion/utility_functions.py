@@ -1,9 +1,11 @@
 """Module with varios utility functions for file and process handling"""
 
-import os
 import base64
+import os
 import subprocess
+
 import requests
+
 from env_variables import POST_URL
 
 
@@ -34,7 +36,7 @@ def run_subprocess(command, description):
     try:
         print(f"Starting {description} | {' '.join(command)}")
         subprocess.run(command, capture_output=True, check=True)
-        return False  # No error
+        return False
     except subprocess.CalledProcessError as e:
         print(f"Error running command: {command}")
         print("Return code:", e.returncode)

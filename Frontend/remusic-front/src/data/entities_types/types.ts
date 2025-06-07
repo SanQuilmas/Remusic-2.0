@@ -8,6 +8,8 @@ interface instanciaPartitura {
 
   ERROR: boolean | null;
   DONE: boolean | null;
+  IN_PROGRESS: boolean | null;
+  CURRENT_PROGRESS: number | null;
 }
 
 export type { instanciaPartitura };
