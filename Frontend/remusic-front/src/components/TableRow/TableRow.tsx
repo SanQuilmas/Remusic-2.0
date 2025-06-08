@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { MainAPI } from "../../data/api_endpoints/enpoints";
 import type { instanciaPartitura } from "../../data/entities_types/types";
 import "./TableRow.css";
-import { PROGRESS_WHEEL } from "../../data/variables/env_variables";
 import { useEffect, useState } from "react";
 
 interface RowProps {
@@ -11,6 +10,25 @@ interface RowProps {
 }
 
 export const TableRow = ({ instanceInfo, onDelete }: RowProps) => {
+  const stored = sessionStorage.getItem(`progress_val_${instanceInfo.id}`);
+  const [progress_val, setProgress_val] = useState<number>(
+    stored ? JSON.parse(stored) : 0
+  );
+
+  useEffect(() => {
+    if (instanceInfo.DONE || instanceInfo.ERROR) return;
+    const interval = setInterval(() => {
+      setProgress_val((prev) => prev + 1);
+      sessionStorage.setItem(
+        `progress_val_${instanceInfo.id}`,
+        JSON.stringify(progress_val)
+      );
+      if (instanceInfo.CURRENT_PROGRESS && instanceInfo.CURRENT_PROGRESS > 100)
+        return () => clearInterval(interval);
+    }, 1250);
+    return () => clearInterval(interval);
+  }, [instanceInfo, progress_val]);
+
   const handleDeleteButtonClick = async () => {
     try {
       const response = await fetch(MainAPI + "/" + instanceInfo.id, {
@@ -27,15 +45,6 @@ export const TableRow = ({ instanceInfo, onDelete }: RowProps) => {
       alert("Network error: " + err);
     }
   };
-
-  const [progress_pos, setProgress_pos] = useState<number>(0);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress_pos((prev) => (prev + 1) % 4);
-    }, 250);
-
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div className="tablerow_container">
@@ -57,14 +66,7 @@ export const TableRow = ({ instanceInfo, onDelete }: RowProps) => {
         ) : instanceInfo.IN_PROGRESS ? (
           <div className="progress__bar">
             <label htmlFor="progress__content">Currently in Progress </label>
-            {/* <progress
-              id="progress__content"
-              max="100"
-              value={instanceInfo.CURRENT_PROGRESS ?? 0}
-            /> */}
-            <p id="progress__content" className="progress__wheel">
-              {PROGRESS_WHEEL[progress_pos]}
-            </p>
+            <progress id="progress__content" max="100" value={progress_val} />
           </div>
         ) : (
           <p>Loading...</p>
